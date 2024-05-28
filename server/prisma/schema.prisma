@@ -17,45 +17,50 @@ datasource db {
 // Menu model
 model Menu {
   id              Int      @id @default(autoincrement())
-  nama            String   @unique
-  harga           Float
+  name            String   @unique
+  price           Float
   isAvailable     Boolean
-  transactions    MenuOnTransaction[] 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  item            Item?
 }
 
+model Item {
+  id              Int      @id @default(autoincrement())
+  amount          Int   
+  menu            Menu      @relation(fields: [menuId],references: [id])
+  menuId          Int       @unique
+  transactions    ItemOnTransaction[] 
+}
 model Transaction {
   id              Int     @id @default(autoincrement())
   paidoff         Boolean
-  menus           MenuOnTransaction[]
+  items           ItemOnTransaction[]
   totalPrice      Float?
-  customerEmail   String    
-  customer        Customer @relation(fields: [customerEmail],references: [email])
+  idCustomer      Int    
+  customer        Customer @relation(fields: [idCustomer],references: [id])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
 
-model MenuOnTransaction {
-  menuId Int
-  menu   Menu  @relation(fields: [menuId],references: [id])
+model ItemOnTransaction {
+  itemId Int
+  item   Item  @relation(fields: [itemId],references: [id])
   transactionId Int
   transaction Transaction @relation(fields: [transactionId],references: [id])
-  @@id([menuId,transactionId])
+  @@id([itemId,transactionId])
 }
 
 model Customer {
-  id              Int     @id @default(autoincrement())
-  email           String  @unique
+  id              Int     @unique@id @default(autoincrement())
+  noTable         String  
   customerName    String  
   transaction     Transaction[]
 }
 
 
 model Profile{
-  id              Int     @id @default(autoincrement())
-  role String
-  username String @unique
+  id       Int     @id @default(autoincrement())@unique
+  role     String
+  username String 
   password String 
 }
 

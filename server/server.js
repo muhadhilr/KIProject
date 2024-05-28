@@ -13,29 +13,29 @@ app.get("/menus", async (req, res) => {
   res.send(menus);
 });
 
-// Define route to get all transactions for a customer by customer ID
-// Define route to get all transactions for a customer by customer ID
-// Define route to get all transactions for a customer by customer ID
 app.get("/transactions/:customerId", async (req, res) => {
+  const customerId = parseInt(req.params.customerId);
+
   try {
-    const customerId = parseInt(req.params.customerId);
-
-    // Retrieve customer data to get the email
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
-    });
-
-    if (!customer) {
-      return res.status(404).json({ error: "Customer not found" });
-    }
-
-    // Retrieve transactions for the specified customer email
     const transactions = await prisma.transaction.findMany({
-      where: { customerEmail: customer.email },
+      where: {
+        idCustomer: customerId,
+      },
       include: {
-        menus: {
-          select: {
-            menu: { select: { nama: true, harga: true } },
+        customer: true,
+        items: {
+          include: {
+            item: {
+              select: {
+                menu: {
+                  select: {
+                    name: true,
+                    price: true,
+                  },
+                },
+                amount: true,
+              },
+            },
           },
         },
       },
@@ -43,19 +43,18 @@ app.get("/transactions/:customerId", async (req, res) => {
 
     // Calculate total price for each transaction
     transactions.forEach((transaction) => {
-      transaction.totalPrice = transaction.menus.reduce(
-        (total, menu) => total + menu.menu.harga,
+      transaction.totalPrice = transaction.items.reduce(
+        (total, currentItem) => {
+          return total + currentItem.item.menu.price * currentItem.item.amount;
+        },
         0
       );
     });
 
-    // Return success response with transactions and associated menu details
-    res.status(200).json({ transactions });
+    res.json(transactions);
   } catch (error) {
-    // Return error response
-    res
-      .status(500)
-      .json({ error: "Internal server error", details: error.message });
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
