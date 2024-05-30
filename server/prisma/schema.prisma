@@ -20,14 +20,14 @@ model Menu {
   name            String   @unique
   price           Float
   isAvailable     Boolean
-  item            Item?
+  item            Item[]
 }
 
 model Item {
   id              Int      @id @default(autoincrement())
   amount          Int   
   menu            Menu      @relation(fields: [menuId],references: [id])
-  menuId          Int       @unique
+  menuId          Int       
   transactions    ItemOnTransaction[] 
 }
 model Transaction {
