@@ -24,8 +24,8 @@ async function main() {
     where: { id: 1 },
     update: {},
     create: {
-      role: "KASIR",
-      username: "Anna",
+      role: "admin",
+      email: "Anna",
       password: "wkwkwkwk",
     },
   });
