@@ -8,6 +8,7 @@ const findAll = async () => {
         name: true,
         isAvailable: true,
         price: true,
+        picture: true,
       },
     });
   } catch (err) {

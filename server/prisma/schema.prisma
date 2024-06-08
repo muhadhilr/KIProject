@@ -20,6 +20,8 @@ model Menu {
   name            String   @unique
   price           Float
   isAvailable     Boolean
+  description     String?
+  picture         String?      @db.VarChar(255)
   item            Item[]
 }
 

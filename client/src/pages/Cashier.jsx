@@ -1,16 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Cashier = () => {
-  const [orders, setOrders] = useState([
-    { id: 1, meja: 1, pesanan: "Ayam Goreng", totalHarga: 20000, isLunas: false },
-    { id: 2, meja: 2, pesanan: "Nasi Goreng", totalHarga: 18000, isLunas: false },
-    { id: 3, meja: 3, pesanan: "Es Teh", totalHarga: 5000, isLunas: false },
-  ]);
+  const [transactions, setTransactions] = useState([]);
+  const BASE_URL = window.REACT_APP_SERVER_URL
+    ? window.REACT_APP_SERVER_URL
+    : "http://localhost:3000";
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get(BASE_URL + "/api/transactions");
+        setTransactions(response.data.data);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
 
-  const handleLunas = (id, status) => {
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, isLunas: status } : order
-    ));
+    fetchTransactions();
+  }, []);
+
+  // Perbaiki URL endpoint untuk PUT request
+  const handleLunas = async (id, status) => {
+    try {
+      await axios.put(BASE_URL + `/api/transaction/${id}/paidoff`, {
+        paidoff: status,
+      });
+      setTransactions(
+        transactions.map((transaction) =>
+          transaction.id === id
+            ? { ...transaction, paidoff: status }
+            : transaction
+        )
+      );
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+    }
   };
 
   return (
@@ -20,30 +44,36 @@ const Cashier = () => {
         <table className="w-full border-collapse border border-gray-200">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-200 px-4 py-2">Nomor Meja</th>
-              <th className="border border-gray-200 px-4 py-2">Pesanan</th>
+              <th className="border  border-gray-200 px-4 py-2">Nomor Meja</th>
+              <th className="border border-gray-200 px-4 py-2">Username</th>
               <th className="border border-gray-200 px-4 py-2">Total Harga</th>
               <th className="border border-gray-200 px-4 py-2">Lunas</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map(order => (
-              <tr key={order.id}>
-                <td className="border border-gray-200 px-4 py-2">{order.meja}</td>
-                <td className="border border-gray-200 px-4 py-2">{order.pesanan}</td>
-                <td className="border border-gray-200 px-4 py-2">{order.totalHarga}</td>
+            {transactions.map((transaction) => (
+              <tr key={transaction.id}>
+                <td className="border text-gray-800  border-gray-200 px-4 py-2">
+                  {transaction.customer.noTable}
+                </td>
                 <td className="border border-gray-200 px-4 py-2">
-                  {order.isLunas ? (
+                  {transaction.customer.customerName}
+                </td>
+                <td className="border border-gray-200 px-4 py-2">
+                  {transaction.totalPrice}
+                </td>
+                <td className="border border-gray-200 px-4 py-2">
+                  {transaction.paidoff ? (
                     <button
                       className="bg-red-500 text-white px-4 py-2 rounded"
-                      onClick={() => handleLunas(order.id, false)}
+                      onClick={() => handleLunas(transaction.id, false)}
                     >
                       Cancel
                     </button>
                   ) : (
                     <button
                       className="bg-green-500 text-white px-4 py-2 rounded"
-                      onClick={() => handleLunas(order.id, true)}
+                      onClick={() => handleLunas(transaction.id, true)}
                     >
                       Lunas
                     </button>

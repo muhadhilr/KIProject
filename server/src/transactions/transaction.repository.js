@@ -7,6 +7,7 @@ const findAll = async () => {
         customer: {
           select: {
             customerName: true,
+            noTable: true,
           },
         },
         items: {
