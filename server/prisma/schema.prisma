@@ -59,10 +59,9 @@ model Customer {
 }
 
 
-model Profile{
-  id       Int     @id @default(autoincrement())@unique
+model Profile {
+  id       Int     @id @default(autoincrement()) @unique
   role     String
-  username String 
-  password String 
+  email    String  @unique
+  password String
 }
-

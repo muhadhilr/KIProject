@@ -3,6 +3,7 @@ const app = express();
 
 const { transactionRouter } = require("./transactions/transaction.router");
 const { menuRouter } = require("./menus/menu.router");
+const profileRouter = require("./profile/profile.router");
 const port = 3000;
 
 app.use((req, res, next) => {
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(transactionRouter);
 app.use(menuRouter);
+app.use(profileRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
