@@ -12,6 +12,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 // Menu model
@@ -57,7 +58,6 @@ model Customer {
   customerName    String  
   transaction     Transaction[]
 }
-
 
 model Profile {
   id       Int     @id @default(autoincrement()) @unique
