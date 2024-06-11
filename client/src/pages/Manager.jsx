@@ -8,7 +8,7 @@ const Manager = () => {
   // Base URL
   const BASE_URL = window.REACT_APP_SERVER_URL
     ? window.REACT_APP_SERVER_URL
-    : "http://localhost:3000";
+    : "https://api-ki-project.vercel.app";
 
   useEffect(() => {
     const fetchTransactions = async () => {

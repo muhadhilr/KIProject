@@ -5,7 +5,7 @@ const Cashier = () => {
   const [transactions, setTransactions] = useState([]);
   const BASE_URL = window.REACT_APP_SERVER_URL
     ? window.REACT_APP_SERVER_URL
-    : "http://localhost:3000";
+    : "https://api-ki-project.vercel.app";
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
