@@ -2,11 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
+  "main": "./api/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js",
-    "start": "npx prisma migrate dev && npx prisma db seed && node src/server.js"
+    "dev": "nodemon ./api/index.js",
+    "start": "node ./api/index.js",
+    "postinstall": "npx prisma generate"
   },
   "keywords": [],
   "author": "",

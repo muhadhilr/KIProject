@@ -8,10 +8,10 @@ async function main() {
       name: "Ayam Kalasan",
       price: 15000,
       isAvailable: true,
-      picture:
-        "https://i.pinimg.com/564x/be/c8/72/bec8721104681a2d2a0c8490cf54457b.jpg",
+      picture: "https://i.pinimg.com/564x/be/c8/72/bec8721104681a2d2a0c8490cf54457b.jpg",
     },
   });
+    
   const menus2 = await db.prisma.menu.upsert({
     where: { id: 2 },
     update: {},
