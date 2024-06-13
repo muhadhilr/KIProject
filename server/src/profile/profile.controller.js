@@ -16,21 +16,28 @@ const addUser = async (req, res) => {
   }
 };
 
-const loginUser =  async (req, res) => {
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await profileRepository.loginUser(email, password);
-    res.status(200).json({
-      data: user,
-      message: "Login Sukses",
-    });
+    const result = await profileRepository.loginUser(email, password);
+    if (result) {
+      res.status(200).json({
+        token: result.token,
+        message: "Login Sukses",
+      });
+    } else {
+      res.status(401).json({
+        status: "failed",
+        message: "Invalid email or password",
+      });
+    }
   } catch (err) {
     res.status(500).json({
       status: "failed",
       message: "Gagal Bos",
     });
   }
-}
+};
 
 module.exports = {
   addUser, loginUser

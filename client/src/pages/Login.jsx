@@ -1,12 +1,19 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Input from "../elements/Input";
 import Button from "../elements/Button";
+import { jwtDecode } from 'jwt-decode';
 
-const Login = () => {
+const API_KEY = import.meta.env.VITE_APIKey;
+const BASE_URL = import.meta.env.VITE_UrlAPI;
+
+const Login = ({ setRole }) => {
   const [formData, setFormData] = useState({
-    Email: "",
-    Password: "",
+    email: "",
+    password: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,12 +21,38 @@ const Login = () => {
       ...formData,
       [name]: value,
     });
-  };
+  };  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-  };
+    try {
+      const { email, password } = formData;
+      const response = await axios.post(
+        `${BASE_URL}/login`,
+        { email, password },
+        {
+          headers: {
+            "x-api-key": API_KEY,
+          },
+        }
+      );
+  
+      const { token } = response.data;
+      localStorage.setItem("token", token);
+      const decodedToken = jwtDecode(token);
+      // setRole(decodedToken.role);
+  
+      if (decodedToken.role === "manager") {
+        navigate("/manager");
+      } else if (decodedToken.role === "cashier") {
+        navigate("/cashier");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };  
 
   return (
     <div className="h-screen flex items-center justify-center text-center">
@@ -29,7 +62,7 @@ const Login = () => {
           <Input
             placeholder={"Masukkan Email"}
             type={"email"}
-            name="Email"
+            name="email"
             onChange={handleChange}
           >
             Email
@@ -37,7 +70,7 @@ const Login = () => {
           <Input
             placeholder={"Masukkan Password"}
             type={"password"}
-            name="Password"
+            name="password"
             onChange={handleChange}
           >
             Password

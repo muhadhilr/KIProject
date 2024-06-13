@@ -1,6 +1,7 @@
 const corsOptions = {
   origin: [
-    "https://ki-project.vercel.app"
+    "https://ki-project.vercel.app",
+    "http://localhost:5173",
   ],
   methods: ["GET", "PUT", "POST"],
   allowedHeaders: [

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const db = require("../db/prisma.db");
 
 const createUser = async (email, password, role) => {
@@ -24,14 +25,12 @@ const loginUser = async (email, password) => {
       where: { email },
     });
     if (profile && (await bcrypt.compare(password, profile.password))) {
-      const dataUser = [
-        {
-          id: profile.id,
-          email: profile.email,
-          role: profile.role
-        }
-      ]
-      return dataUser;
+      const token = jwt.sign(
+        { id: profile.id, email: profile.email, role: profile.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+      return { token };
     }
     return null;
   } catch (err) {
