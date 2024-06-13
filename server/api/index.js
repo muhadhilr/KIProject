@@ -18,9 +18,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use("/transactions", transactionRouter);  // Assuming your routers have base paths
-app.use("/menus", menuRouter);
-app.use("/profile", profileRouter);
+app.use("", transactionRouter);  // Assuming your routers have base paths
+app.use("", menuRouter);
+app.use("", profileRouter);
 
 app.get("/", function(req, res) {
   res.send("Hello World!");
