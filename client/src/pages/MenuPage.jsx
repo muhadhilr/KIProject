@@ -5,9 +5,8 @@ import Input from "../elements/Input";
 import Button from "../elements/Button";
 import Dropdown from "../elements/Dropdown";
 
-// Load environment variables
-const BASE_URL = process.env.UrlAPI;
-const API_KEY = process.env.APIKey;
+const BASE_URL = import.meta.env.VITE_UrlAPI;
+const API_KEY = import.meta.env.VITE_APIKey;
 
 const MenuPage = () => {
   const [menus, setMenus] = useState([]);
@@ -21,11 +20,13 @@ const MenuPage = () => {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const response = await axios.get(BASE_URL + "/menus", {
+        const response = await axios.get(`${BASE_URL}/menus`, {
           headers: {
             'x-api-key': API_KEY,
           },
         });
+        console.log('API response:', response);
+
         if (!response.data) {
           throw new Error("No data received from API");
         }
@@ -98,7 +99,7 @@ const MenuPage = () => {
 
       // Kirim data ke endpoint
       const response = await axios.post(
-        BASE_URL + "/transaction",
+        `${BASE_URL}/transaction`,
         {
           username,
           noTable,
