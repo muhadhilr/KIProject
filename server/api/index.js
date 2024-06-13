@@ -9,6 +9,8 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   const referer = req.headers.referer;
 
+  const allowedOrigin = "https://ki-project.vercel.app/";
+
   if ((origin && origin === allowedOrigin) || (referer && referer.startsWith(allowedOrigin))) {
       next();
   } else {
@@ -18,7 +20,7 @@ app.use((req, res, next) => {
 
 const corsOptions = {
   origin: (origin, callback) => {
-      if (origin === "https://ki-project.vercel.app/" || !origin) {
+      if (origin === allowedOrigin || !origin) {
           callback(null, true);
       } else {
           callback(new Error('Not allowed by CORS'));
