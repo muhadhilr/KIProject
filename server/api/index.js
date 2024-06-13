@@ -5,7 +5,6 @@ const { transactionRouter } = require("../src/transactions/transaction.router");
 const { menuRouter } = require("../src/menus/menu.router");
 const profileRouter = require("../src/profile/profile.router");
 
-// Konfigurasi CORS
 const corsOptions = {
   origin: "https://ki-project.vercel.app",
   methods: ["GET", "PUT"],
@@ -28,4 +27,4 @@ app.listen(3000, () => {
   console.log("Server started on port 3000");
 });
 
-module.exports = app;  // Ekspor app sebagai modul
+module.exports = app;
