@@ -8,8 +8,8 @@ const profileRouter = require("../src/profile/profile.router");
 const corsOptions = require("../config/corsOptions");
 const apiKeyMiddleware = require("../middleware/apiKeyMiddleware");
 
-app.use(apiKeyMiddleware);
 app.use(cors(corsOptions));
+app.use(apiKeyMiddleware);
 
 app.use(express.json());
 app.use("", transactionRouter);

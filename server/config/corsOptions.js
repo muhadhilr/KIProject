@@ -1,7 +1,8 @@
-// config/corsOptions.js
 const corsOptions = {
-  origin: "https://ki-project.vercel.app",
-  methods: ["GET", "PUT"],
+  origin: [
+    "https://ki-project.vercel.app"
+  ],
+  methods: ["GET", "PUT", "POST"],
   allowedHeaders: [
     "Origin",
     "X-Requested-With",
