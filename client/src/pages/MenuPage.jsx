@@ -5,6 +5,10 @@ import Input from "../elements/Input";
 import Button from "../elements/Button";
 import Dropdown from "../elements/Dropdown";
 
+// Load environment variables
+const BASE_URL = process.env.UrlAPI;
+const API_KEY = process.env.APIKey;
+
 const MenuPage = () => {
   const [menus, setMenus] = useState([]);
   const [username, setUsername] = useState("");
@@ -14,14 +18,14 @@ const MenuPage = () => {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const BASE_URL = window.REACT_APP_SERVER_URL
-    ? window.REACT_APP_SERVER_URL
-    : "https://api-ki-project.vercel.app";
-
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const response = await axios.get(BASE_URL + "/api/menus");
+        const response = await axios.get(BASE_URL + "/menus", {
+          headers: {
+            'x-api-key': API_KEY,
+          },
+        });
         if (!response.data) {
           throw new Error("No data received from API");
         }
@@ -93,11 +97,19 @@ const MenuPage = () => {
       }
 
       // Kirim data ke endpoint
-      const response = await axios.post(BASE_URL + "/api/transaction", {
-        username,
-        noTable,
-        items: selectedItems,
-      });
+      const response = await axios.post(
+        BASE_URL + "/transaction",
+        {
+          username,
+          noTable,
+          items: selectedItems,
+        },
+        {
+          headers: {
+            'x-api-key': API_KEY,
+          },
+        }
+      );
 
       // Set the success message
       setSuccessMessage(response.data.message);
@@ -132,12 +144,12 @@ const MenuPage = () => {
   }));
 
   return (
-    <div className="mt-10 flex  justify-center">
+    <div className="mt-10 flex justify-center">
       <div className="ms-8">
         <h1 className="mb-8 text-3xl font-bold text-sky-500 text-center">
           Daftar Menu
         </h1>
-        <div className=" grid gap-8 max-w-max lg:grid-cols-3 md:grid-cols-2 w-full">
+        <div className="grid gap-8 max-w-max lg:grid-cols-3 md:grid-cols-2 w-full">
           {menus.map((menu) => (
             <CardMenu
               key={menu.id}
@@ -149,10 +161,8 @@ const MenuPage = () => {
         </div>
       </div>
       <div className="mx-8 max-h-[340px] text-center flex flex-col justify-center border-[1px] px-8 py-8 rounded-lg border-sky-500">
-        <h1 className="mt-8 mb-4  text-3xl font-bold text-sky-500">
-          Pemesanan
-        </h1>
-        <form className=" mx-auto">
+        <h1 className="mt-8 mb-4 text-3xl font-bold text-sky-500">Pemesanan</h1>
+        <form className="mx-auto">
           <div className="mb-5">
             <Input
               placeholder="Masukkan Nama"
