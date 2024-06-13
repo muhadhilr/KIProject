@@ -5,19 +5,29 @@ const { transactionRouter } = require("../src/transactions/transaction.router");
 const { menuRouter } = require("../src/menus/menu.router");
 const profileRouter = require("../src/profile/profile.router");
 
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const referer = req.headers.referer;
+
+  if ((origin && origin === allowedOrigin) || (referer && referer.startsWith(allowedOrigin))) {
+      next();
+  } else {
+      res.status(403).send('Access Denied');
+  }
+});
+
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (origin === "https://ki-project.vercel.app/" || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  optionsSuccessStatus: 200
+  origin: (origin, callback) => {
+      if (origin === "https://ki-project.vercel.app/" || !origin) {
+          callback(null, true);
+      } else {
+          callback(new Error('Not allowed by CORS'));
+      }
+  }
 };
 
+
 app.use(cors(corsOptions));
-app.use(express.json());
 
 app.use("/", transactionRouter);
 app.use("/", menuRouter);
