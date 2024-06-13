@@ -12,10 +12,12 @@ const MenuPage = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const BASE_URL = window.REACT_APP_SERVER_URL
     ? window.REACT_APP_SERVER_URL
     : "https://api-ki-project.vercel.app";
+
   useEffect(() => {
     const fetchMenus = async () => {
       try {
@@ -31,6 +33,7 @@ const MenuPage = () => {
 
     fetchMenus();
   }, []);
+
   const handleAddItem = (menuId) => {
     const existingItem = selectedItems.find((item) => item.menuId === menuId);
 
@@ -95,13 +98,15 @@ const MenuPage = () => {
         noTable,
         items: selectedItems,
       });
-      console.log(response.data.message);
+
+      // Set the success message
+      setSuccessMessage(response.data.message);
 
       // Reset form setelah checkout berhasil
       setUsername("");
       setNoTable("");
       setSelectedItems([]);
-      setShowPopup(false);
+      setShowPopup(true); // Show popup with the success message
     } catch (error) {
       console.error("Error during checkout:", error);
     }
@@ -118,6 +123,7 @@ const MenuPage = () => {
   const closePopup = () => {
     setShowPopup(false);
     setShowErrorPopup(false);
+    setSuccessMessage("");
   };
 
   const tableOptions = Array.from({ length: 100 }, (_, i) => ({
@@ -174,28 +180,42 @@ const MenuPage = () => {
       {showPopup && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-4">Konfirmasi Pesanan</h2>
-            <p>Nama: {username}</p>
-            <p>Nomor Meja: {noTable}</p>
-            <h3 className="text-xl font-bold mt-4">Daftar Menu</h3>
-            <ul className="mt-2 mb-4">
-              {selectedItems.map((item) => {
-                const menu = menus.find((menu) => menu.id === item.menuId);
-                return (
-                  <li key={item.menuId} className="mb-2">
-                    {menu.name} x {item.amount}
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="flex justify-end space-x-4">
-              <Button onClick={closePopup} className="bg-gray-400">
-                Batal
-              </Button>
-              <Button onClick={handleCheckout} className="bg-green-500">
-                Submit
-              </Button>
-            </div>
+            {successMessage ? (
+              <>
+                <h2 className="text-2xl font-bold mb-4">Transaksi Berhasil!</h2>
+                <p>{successMessage}</p>
+                <div className="flex justify-end space-x-4 mt-4">
+                  <Button onClick={closePopup} className="bg-green-500">
+                    Oke
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold mb-4">Konfirmasi Pesanan</h2>
+                <p>Nama: {username}</p>
+                <p>Nomor Meja: {noTable}</p>
+                <h3 className="text-xl font-bold mt-4">Daftar Menu</h3>
+                <ul className="mt-2 mb-4">
+                  {selectedItems.map((item) => {
+                    const menu = menus.find((menu) => menu.id === item.menuId);
+                    return (
+                      <li key={item.menuId} className="mb-2">
+                        {menu.name} x {item.amount}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <div className="flex justify-end space-x-4">
+                  <Button onClick={closePopup} className="bg-gray-400">
+                    Batal
+                  </Button>
+                  <Button onClick={handleCheckout} className="bg-green-500">
+                    Submit
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
