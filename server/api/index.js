@@ -1,24 +1,21 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const { transactionRouter } = require("../src/transactions/transaction.router");
 const { menuRouter } = require("../src/menus/menu.router");
 const profileRouter = require("../src/profile/profile.router");
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, PUT");
+const corsOptions = {
+  origin: "https://ki-project.vercel.app",
+  methods: ["GET", "PUT"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+  optionsSuccessStatus: 200
+};
 
-  if (req.method === "OPTIONS") return res.status(200).json({});
-
-  next();
-});
+app.use(cors(corsOptions));
 
 app.use(express.json());
-app.use("", transactionRouter);  // Assuming your routers have base paths
+app.use("", transactionRouter); 
 app.use("", menuRouter);
 app.use("", profileRouter);
 
@@ -30,4 +27,4 @@ app.listen(3000, () => {
   console.log("Server started on port 3000");
 });
 
-module.exports = app;  // Exporting app as module
+module.exports = app;
