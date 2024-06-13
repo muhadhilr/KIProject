@@ -6,18 +6,22 @@ const { menuRouter } = require("../src/menus/menu.router");
 const profileRouter = require("../src/profile/profile.router");
 
 const corsOptions = {
-  origin: "https://ki-project.vercel.app",
-  methods: ["GET", "PUT"],
-  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+  origin: function (origin, callback) {
+    if (origin === "https://ki-project.vercel.app/" || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
-app.use("", transactionRouter); 
-app.use("", menuRouter);
-app.use("", profileRouter);
+
+app.use("/", transactionRouter);
+app.use("/", menuRouter);
+app.use("/", profileRouter);
 
 app.get("/", function(req, res) {
   res.send("Hello World!");
