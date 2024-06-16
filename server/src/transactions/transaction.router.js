@@ -21,6 +21,11 @@ transactionRouter.post(
   transactionController.addTransaction
 );
 
+transactionRouter.delete(
+  "/api/transaction/:id",
+  transactionController.deleteTransaction
+);
+
 module.exports = {
   transactionRouter,
 };

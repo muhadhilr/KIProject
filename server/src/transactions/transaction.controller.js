@@ -74,14 +74,23 @@ const addTransaction = async (req, res) => {
     });
   }
 };
-const deleteById = async (id) => {
+const deleteTransaction = async (req, res) => {
+  const transactionId = parseInt(req.params.id);
   try {
-    await db.prisma.transaction.delete({
-      where: { id },
+    const deletedTransaction = await transactionRepository.deleteById(
+      transactionId
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Transaction deleted successfully",
+      data: deletedTransaction,
     });
   } catch (err) {
-    console.log(err);
-    throw err;
+    console.error(err);
+    res.status(500).json({
+      status: "failed",
+      message: "Oops something went wrong!",
+    });
   }
 };
 
@@ -90,5 +99,5 @@ module.exports = {
   getTransactionById,
   markTransactionAsPaidOff,
   addTransaction,
-  deleteById,
+  deleteTransaction,
 };

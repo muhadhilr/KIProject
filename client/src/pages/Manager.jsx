@@ -1,31 +1,45 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_UrlAPI;
+const API_KEY = import.meta.env.VITE_APIKey;
+
 const Manager = () => {
   const [transactions, setTransactions] = useState([]);
   const [menuAvailability, setMenuAvailability] = useState([]);
-
-  // Base URL
-  const BASE_URL = window.REACT_APP_SERVER_URL
-    ? window.REACT_APP_SERVER_URL
-    : "https://api-ki-project.vercel.app";
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/transactions`);
+        const response = await axios.get(`${BASE_URL}/transactions`, {
+          headers: {
+            "x-api-key": API_KEY,
+          },
+        });
         setTransactions(response.data.data);
       } catch (error) {
+        setError("Failed to fetch transactions.");
         console.error("Error fetching transactions:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchMenuAvailability = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/menus`);
+        const response = await axios.get(`${BASE_URL}/menus`, {
+          headers: {
+            "x-api-key": API_KEY,
+          },
+        });
         setMenuAvailability(response.data.data);
       } catch (error) {
+        setError("Failed to fetch menu availability.");
         console.error("Error fetching menu availability:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,9 +51,17 @@ const Manager = () => {
     try {
       const menuToUpdate = menuAvailability.find((menu) => menu.id === id);
       const updatedAvailability = !menuToUpdate.isAvailable;
-      await axios.put(`${BASE_URL}/api/menu/${id}/availability`, {
-        isAvailable: updatedAvailability,
-      });
+      await axios.put(
+        `${BASE_URL}/menu/${id}/availability`,
+        {
+          isAvailable: updatedAvailability,
+        },
+        {
+          headers: {
+            "x-api-key": API_KEY,
+          },
+        }
+      );
       setMenuAvailability(
         menuAvailability.map((menu) =>
           menu.id === id ? { ...menu, isAvailable: updatedAvailability } : menu
@@ -49,6 +71,30 @@ const Manager = () => {
       console.error("Error updating menu availability:", error);
     }
   };
+
+  const deleteTransaction = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/transaction/${id}`, {
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      });
+      // Remove the deleted transaction from the state
+      setTransactions(
+        transactions.filter((transaction) => transaction.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center">
@@ -65,6 +111,8 @@ const Manager = () => {
               <th className="border border-gray-200 px-4 py-2">Username</th>
               <th className="border border-gray-200 px-4 py-2">Total Harga</th>
               <th className="border border-gray-200 px-4 py-2">Lunas</th>
+              <th className="border border-gray-200 px-4 py-2">Aksi</th>{" "}
+              {/* New column for actions */}
             </tr>
           </thead>
           {/* Isi tabel */}
@@ -82,6 +130,14 @@ const Manager = () => {
                 </td>
                 <td className="border border-gray-200 px-4 py-2">
                   {transaction.paidoff ? "Lunas" : "Belum Lunas"}
+                </td>
+                <td className="border border-gray-200 px-4 py-2">
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded"
+                    onClick={() => deleteTransaction(transaction.id)}
+                  >
+                    Hapus
+                  </button>
                 </td>
               </tr>
             ))}

@@ -77,20 +77,12 @@ const updateByid = async (id, paidoff) => {
 
 const createTransaction = async (username, noTable, items) => {
   try {
-    // Find customer by noTable
-    let customer = await db.prisma.customer.findFirst({
-      where: { noTable },
+    customer = await db.prisma.customer.create({
+      data: {
+        noTable,
+        customerName: username,
+      },
     });
-
-    // If customer does not exist, create a new one
-    if (!customer) {
-      customer = await db.prisma.customer.create({
-        data: {
-          noTable,
-          customerName: username,
-        },
-      });
-    }
 
     // Create the transaction with the items
     const transaction = await db.prisma.transaction.create({
@@ -139,10 +131,29 @@ const createTransaction = async (username, noTable, items) => {
     throw err;
   }
 };
+const deleteById = async (id) => {
+  try {
+    // Delete related ItemOnTransaction records first
+    await db.prisma.itemOnTransaction.deleteMany({
+      where: { transactionId: id },
+    });
+
+    // Now delete the transaction
+    const deletedTransaction = await db.prisma.transaction.delete({
+      where: { id: id },
+    });
+
+    return deletedTransaction;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
 
 module.exports = {
   findAll,
   findById,
   updateByid,
+  deleteById,
   createTransaction,
 };
