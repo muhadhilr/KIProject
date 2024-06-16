@@ -108,6 +108,7 @@ const Cashier = () => {
           </tbody>
         </table>
       </div>
+      <Logout />
     </div>
   );
 };
