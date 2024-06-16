@@ -17,25 +17,25 @@ const MenuPage = () => {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    const fetchMenus = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/menus`, {
-          headers: {
-            'x-api-key': API_KEY,
-          },
-        });
-        console.log('API response:', response);
+  const fetchMenus = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/menus`, {
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      });
+      console.log("API response:", response);
 
-        if (!response.data) {
-          throw new Error("No data received from API");
-        }
-        setMenus(response.data.data);
-      } catch (error) {
-        console.error("Error fetching menu:", error);
+      if (!response.data) {
+        throw new Error("No data received from API");
       }
-    };
+      setMenus(response.data.data);
+    } catch (error) {
+      console.error("Error fetching menu:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchMenus();
   }, []);
 
@@ -107,7 +107,7 @@ const MenuPage = () => {
         },
         {
           headers: {
-            'x-api-key': API_KEY,
+            "x-api-key": API_KEY,
           },
         }
       );
@@ -120,6 +120,7 @@ const MenuPage = () => {
       setNoTable("");
       setSelectedItems([]);
       setShowPopup(true); // Show popup with the success message
+      fetchMenus(); // Re-fetch the menu items to refresh the page
     } catch (error) {
       console.error("Error during checkout:", error);
     }
@@ -157,6 +158,10 @@ const MenuPage = () => {
               menu={menu}
               onAdd={handleAddItem}
               onRemove={handleRemoveItem}
+              amount={
+                selectedItems.find((item) => item.menuId === menu.id)?.amount ||
+                0
+              } // Pass amount to CardMenu
             />
           ))}
         </div>

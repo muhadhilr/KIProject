@@ -74,6 +74,7 @@ const addTransaction = async (req, res) => {
     });
   }
 };
+
 const deleteById = async (id) => {
   try {
     await db.prisma.transaction.delete({

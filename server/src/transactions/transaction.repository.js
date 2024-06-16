@@ -77,20 +77,12 @@ const updateByid = async (id, paidoff) => {
 
 const createTransaction = async (username, noTable, items) => {
   try {
-    // Find customer by noTable
-    let customer = await db.prisma.customer.findFirst({
-      where: { noTable },
+    customer = await db.prisma.customer.create({
+      data: {
+        noTable,
+        customerName: username,
+      },
     });
-
-    // If customer does not exist, create a new one
-    if (!customer) {
-      customer = await db.prisma.customer.create({
-        data: {
-          noTable,
-          customerName: username,
-        },
-      });
-    }
 
     // Create the transaction with the items
     const transaction = await db.prisma.transaction.create({
