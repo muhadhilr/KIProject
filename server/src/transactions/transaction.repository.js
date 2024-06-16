@@ -131,10 +131,29 @@ const createTransaction = async (username, noTable, items) => {
     throw err;
   }
 };
+const deleteById = async (id) => {
+  try {
+    // Delete related ItemOnTransaction records first
+    await db.prisma.itemOnTransaction.deleteMany({
+      where: { transactionId: id },
+    });
+
+    // Now delete the transaction
+    const deletedTransaction = await db.prisma.transaction.delete({
+      where: { id: id },
+    });
+
+    return deletedTransaction;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
 
 module.exports = {
   findAll,
   findById,
   updateByid,
+  deleteById,
   createTransaction,
 };

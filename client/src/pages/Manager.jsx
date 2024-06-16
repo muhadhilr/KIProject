@@ -72,6 +72,22 @@ const Manager = () => {
     }
   };
 
+  const deleteTransaction = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/transaction/${id}`, {
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      });
+      // Remove the deleted transaction from the state
+      setTransactions(
+        transactions.filter((transaction) => transaction.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -95,6 +111,8 @@ const Manager = () => {
               <th className="border border-gray-200 px-4 py-2">Username</th>
               <th className="border border-gray-200 px-4 py-2">Total Harga</th>
               <th className="border border-gray-200 px-4 py-2">Lunas</th>
+              <th className="border border-gray-200 px-4 py-2">Aksi</th>{" "}
+              {/* New column for actions */}
             </tr>
           </thead>
           {/* Isi tabel */}
@@ -112,6 +130,14 @@ const Manager = () => {
                 </td>
                 <td className="border border-gray-200 px-4 py-2">
                   {transaction.paidoff ? "Lunas" : "Belum Lunas"}
+                </td>
+                <td className="border border-gray-200 px-4 py-2">
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded"
+                    onClick={() => deleteTransaction(transaction.id)}
+                  >
+                    Hapus
+                  </button>
                 </td>
               </tr>
             ))}
